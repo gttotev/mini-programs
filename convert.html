@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Radians to Degrees | Converter</title>
+<script>
+	function rd(e) {
+		var a = (e*180)/3.14; alert(a + " degrees.");
+	};
+	function setFocus() {
+		document.getElementById("decimal").focus();
+	};
+</script>
+</head>
+<body style="background-color:aqua;" onload="setFocus()">
+	<h1 style="text-align:center;">Radian to Degree Converter</h1>
+	<form style="text-align:center;">
+		<input type="text" name="decimal" id="decimal">
+		<button onclick="rd(document.forms[0].decimal.value)">Convert</button>
+	</form>
+</body>
+</html>
