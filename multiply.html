@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accurate calc</title>
+	<style>
+		input[type="button"] {
+			font-size: 16px;
+			width: 100px;
+		}
+		.nums input {
+			width: 75%;
+			height: 40px;
+			font-size: 30px;
+		}
+
+		#prod {
+			width: 100%;
+			height: 64px;
+			font-size: 50px;
+		}
+	</style>
+	<script>
+	function toNumArray(numStr) {
+		var numArray = [];
+		for (var i = numStr.length - 1; i >= 0; i--) {
+			numArray.push(numStr.charAt(i));
+		}
+		return numArray;
+	}
+	
+	function addNumArrays(numArray1, numArray2) {
+		var longer = [], shorter = [];
+		if (numArray1.length > numArray2.length) {
+			longer = numArray1;
+			shorter = numArray2;
+		} else {
+			longer = numArray2;
+			shorter = numArray1;
+		}
+		var carry = 0;
+		var sumNumArray = [];
+		for (var i = 0; i < longer.length; i++) {
+			var currLonger = parseInt(longer[i]);
+			if (shorter[i]) {
+				var currShorter = parseInt(shorter[i]);
+				var sum = currLonger + currShorter + carry;
+				sumNumArray.push(sum % 10);
+				carry = Math.floor(sum / 10);
+			} else {
+				var sum = currLonger + carry;
+				sumNumArray.push(sum % 10);
+				carry = Math.floor(sum / 10);
+			}
+			if ((i == longer.length - 1) && carry !== 0)
+				sumNumArray.push(carry);
+		}
+		return sumNumArray;
+	}
+	
+	function toNumStr(numArray) {
+		var numStr = '';
+		for (var i = numArray.length - 1; i >= 0; i--) {
+			numStr += numArray[i];
+		}
+		return numStr;
+	}
+	
+	function multiply() {
+		//Accept command-line args
+		var num1 = document.getElementById('num1').value;
+		var first = toNumArray(num1);
+		var num2 = document.getElementById('num2').value;
+		var second = toNumArray(num2);
+		
+		var lastSum = [0];
+		var currSum = [];
+		
+		//Do multiplying
+		for (var e = 0; e < second.length; e++) {
+			for (var i = 0; i < e; i++)
+				currSum.push(0);
+			var carry = 0;
+			var currBase = parseInt(second[e]);
+			for (var i = 0; i < first.length; i++) {
+				var currDigit = parseInt(first[i]);
+				var currProd = currBase * currDigit + carry;
+				carry = 0;
+				var sumNum = currProd % 10;
+				if (currProd >= 10) {
+					carry = Math.floor(currProd / 10);
+				}
+				currSum.push(sumNum);
+			}
+			if (carry !== 0)
+				currSum.push(carry);
+			lastSum = addNumArrays(lastSum, currSum);
+			currSum = [];
+		}
+		var finalProd = toNumStr(lastSum);
+		
+		//Render on page
+		var prodContainer = document.getElementById('prod');
+		prodContainer.value = finalProd;
+	}
+	</script>
+</head>
+
+<body style="text-align: center;">
+	<h1>Accurate Multiplication Calc</h1>
+	<div>
+		<p class="nums">
+			<input id="num1" type="text" placeholder="First Number" />
+		</p>
+		<span style="font-size: 85px;">X</span>
+		<p class="nums">
+			<input id="num2" type="text" placeholder="Second Number" />
+		</p>
+		<p><input type="button" value="Multiply" onclick="multiply()" /></p>
+		<p><input id="prod" type="text" disabled /></p>
+	</div>
+</body>
+
+</html>
