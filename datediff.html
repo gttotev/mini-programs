@@ -1,4 +1,15 @@
-function calcFine(beg, end) {
+<html>
+<head>
+<title>Date Diff</title>
+<script>
+function findDiff() {
+	var begArr = document.getElementById('beg').value.split('-');
+	var endArr = document.getElementById('end').value.split('-');
+	var beg = new Date(begArr[0], begArr[1]-1, begArr[2]);
+	var end = new Date(endArr[0], endArr[1]-1, endArr[2]);
+	alert('There is a difference of ' + calcDiff(beg, end) + ' days.');
+}
+function calcDiff(beg, end) {
 	function monthDays(month, year) {
 		var months = [
 				31,
@@ -56,3 +67,14 @@ function calcFine(beg, end) {
 		return days;
 	}
 }
+</script>
+</head>
+
+<body style="text-align: center;">
+
+<h1>Date Diff</h1>
+<p><input type="date" id="beg"> -- <input type="date" id="end"></p>
+<button onclick="findDiff()">Calculate Day Diff</button>
+
+</body>
+</html>
