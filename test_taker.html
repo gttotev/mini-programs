@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Takers</title>
+
+<script>
+function testInit() {
+	var startScore = parseInt(document.getElementById("startScore").value)
+	, normScore = parseInt(document.getElementById("normScore").value)
+	, numTests = parseInt(document.getElementById("numTests").value)
+	;
+	testTaker(startScore, normScore, numTests);
+}
+function canvasDraw() {
+	var startScore = parseInt(document.getElementById("startScore").value)
+	, normScore = parseInt(document.getElementById("normScore").value)
+	, numTests = parseInt(document.getElementById("numTests").value)
+	;
+	var canvas = document.getElementById('myCanvas')
+	, context = canvas.getContext('2d')
+	, width = parseInt(canvas.width)
+	, height = parseInt(canvas.height)
+	, downShift = 10
+	, upShift = 15
+	, rightShift = 30
+	, leftShift = 20
+	, graphWidth = width - (leftShift + rightShift)
+	, graphHeight = height - (upShift + downShift)
+	, rowDivide = 50
+	, colDivide = graphWidth / (numTests - 1)
+	;
+	context.lineWidth = 0.35;
+	context.strokeStyle = '#000000';
+	context.font = 'italic 12pt Calibri';
+	context.beginPath();
+	context.moveTo(rightShift, downShift);
+	context.lineTo(width - leftShift, downShift);
+	context.lineTo(width - leftShift, height - upShift);
+	context.lineTo(rightShift, height - upShift);
+	context.lineTo(rightShift, downShift);
+	context.stroke();
+	context.beginPath();
+	for (var r = 0; r < 9; r++) {
+		context.moveTo(rightShift, r * rowDivide + rowDivide + downShift);
+		context.lineTo(width - leftShift, r * rowDivide + rowDivide + downShift);
+	}
+	context.stroke();
+	for (var r = 10; r >= 0; r--) {
+		context.fillText((r * 10).toString() + '%', 0, (10 - r) * rowDivide + downShift);
+	}
+	context.beginPath();
+	for (var c = 0; c < numTests; c++) {
+		context.moveTo(c * colDivide + rightShift, downShift);
+		context.lineTo(c * colDivide + rightShift, height - upShift);
+	}
+	context.stroke();
+	for (var c = 0; c < numTests; c++) {
+		context.fillText((c + 1).toString(), c * colDivide + rightShift, height);
+	}
+	context.beginPath();
+	var firstPoint = pointFinder(1, colDivide, startScore, graphHeight, rightShift, downShift);
+	context.moveTo(firstPoint[0], firstPoint[1]);
+	for (var i = 1; i < numTests; i++) {
+		var currentAverage = (startScore + normScore * i) / (i + 1)
+		, graphPoint = pointFinder(i+1, colDivide, currentAverage, graphHeight, rightShift, downShift)
+		;
+		context.lineTo(graphPoint[0], graphPoint[1]);
+	}
+	context.lineWidth = 3;
+	context.strokeStyle = '#ff0000';
+	context.stroke();
+}
+function testTaker(startScore, normScore, numTests) {
+	var total = startScore;
+	var currentTable = document.createElement("TABLE");
+	var tableHeadings = currentTable.insertRow(0);
+	tableHeadings.insertCell(0).innerHTML = "<b>Number</b>";
+	tableHeadings.insertCell(1).innerHTML = "<b>Total</b>";
+	tableHeadings.insertCell(2).innerHTML = "<b>Average</b>";
+	tableHeadings.insertCell(3).innerHTML = "<b>Grade</b>";
+	var tableHeadingsNodes = tableHeadings.childNodes;
+	for (var n = 0; n < tableHeadingsNodes.length; n++) {
+		tableHeadingsNodes[n].style.border = '1px solid black';
+	}
+        for (var i = 0; i < numTests; i++) {
+		var currentAverage = total / (i+1)
+		, currentGrade = grade(currentAverage)
+		, tableRow = currentTable.insertRow(i+1)
+		, numHTML = document.createTextNode((i+1).toString())
+		, totalHTML = document.createTextNode(total.toString())
+		, averageHTML = document.createTextNode(currentAverage.toString())
+		, gradeHTML = document.createTextNode(currentGrade)
+		;
+	
+	tableRow.insertCell(0).appendChild(numHTML);
+	tableRow.insertCell(1).appendChild(totalHTML);
+	tableRow.insertCell(2).appendChild(averageHTML);
+	tableRow.insertCell(3).appendChild(gradeHTML);
+	var tableRowNodes = tableRow.childNodes;
+	for (var n = 0; n < tableRowNodes.length; n++) {
+		tableRowNodes[n].style.border = '1px solid black';
+	}
+        total += normScore;
+	}
+	currentTable.style.cssText = 'float: left; padding: 10px';
+	document.body.appendChild(currentTable);
+}
+function grade(percent) {
+	if (percent >= 88.0) {
+            return 'A';
+        } else if (percent >= 78.0 && percent < 88.0) {
+            return 'B';
+        } else if (percent >= 67.0 && percent < 78.0) {
+            return 'C';
+        } else if (percent >= 58.0 && percent < 67.0) {
+            return 'D';
+        } else {
+            return 'F';
+        }
+}
+function pointFinder(testNum, colSpace, percent, height, horShift, verShift) {
+	var x = (testNum * colSpace - colSpace) + horShift;
+	var y = (height - height * percent / 100) + verShift;
+	return [x, y];
+}
+</script>
+
+</head>
+<body>
+
+<p>Start Score: <input type="text" id="startScore" value="0" /></p>
+<p>Usual Score: <input type="text" id="normScore" value="96" /></p>
+<p>Number of tests: <input type="text" id="numTests" value="30" /></p>
+<p><button onClick="canvasDraw()">Draw Graph</button></p>
+<p><button onClick="testInit()">Display Stats</button></p>
+
+<p><canvas id="myCanvas" width="950" height="525"></canvas></p>
+
+</body>
+</html>
