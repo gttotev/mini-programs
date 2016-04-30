@@ -1,12 +1,13 @@
 mini-programs
 =================
 
-These little programs are a fun little collection of a variety of small programs I made over the years to do a variety of fun, 
-interesting, and even weird tasks.
+These little programs are a fun little collection of a variety of small programs I made over the years to do a variety of fun, useful, interesting, and even weird tasks.
 
 Here are some of them:
 
 <ul>
+
+<li><b>Statistics Calc</b> - Takes in a list of numerical data and performs statistical calculations on it.</li>
 
 <li><b>Rad-Deg Converter</b> - Converts radians entered to degrees.</li>
 
