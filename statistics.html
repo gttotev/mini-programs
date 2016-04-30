@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Statistics Helper</title>
+<script type="text/javascript">
+function findMean(set) {
+  var sum = 0;
+  for (var i = 0; i < set.length; i++) {
+      sum += set[i];
+  }
+  return (sum / set.length);
+}
+function findMode(set) {
+  var currVal = set[0];
+  var currCnt = 1;
+  var bigVal = [];
+  var bigCnt = 1;
+  for (var i = 1; i < set.length; i++) { //noprotect
+    console.log(currVal, set[i]);
+    if (set[i] == currVal)
+      currCnt++;
+    if (set[i] != currVal || i == set.length-1) {
+      if (currCnt > bigCnt) {
+        bigVal = [];
+        bigVal.push(currVal);
+        bigCnt = currCnt;
+      } else if (currCnt == bigCnt && currCnt > 1) {
+        bigVal.push(currVal);
+      }
+      currVal = set[i];
+      currCnt = 1;
+    }
+  }
+  return bigVal.length === 0 ? "None" : bigVal;
+}
+function findMAD(set) {
+  var avg = findMean(set);
+  var sum = 0;
+  for (var i = 0; i < set.length; i++) {
+    sum += Math.abs(avg - set[i]);
+  }
+  return (sum / set.length);
+}
+function findStDev(set) {
+  var avg = findMean(set);
+  var sum = 0;
+  for (var i = 0; i < set.length; i++) {
+    sum += Math.pow(avg - set[i], 2);
+  }
+  return Math.sqrt(sum / (set.length-1));
+}
+function findQuarts(set) {
+  var median = set.length % 2 === 0 ? (set[set.length / 2] + set[set.length / 2 - 1]) / 2 : set[Math.floor(set.length / 2)];
+  
+  var q1I = Math.floor(set.length / 4);
+  
+  var q1 = Math.floor(set.length/2) % 2 === 0 ? (set[Math.floor(set.length / 4)] + set[Math.floor(set.length / 4)-1]) / 2 : set[Math.floor(set.length / 4)];
+  
+  var q3 = Math.floor(set.length/2) % 2 === 0 ? (set[set.length - q1I] + set[set.length - 1 - q1I]) / 2 : set[set.length - 1 - q1I];
+  
+  return [q1, median, q3];
+}
+function findZScores(set) {
+  var avg = findMean(set);
+  var stDev = findStDev(set);
+  var zScores = [];
+  for (var i = 0; i < set.length; i++) {
+    var diff = set[i] - avg;
+    zScores.push(diff / stDev);
+  }
+  return zScores;
+}
+function findOutliers(set) { //noprotect
+  var quartVals = findQuarts(set);
+  var outliersArr = [];
+  var up = quartVals[2] + ((quartVals[2] - quartVals[0]) * 1.5);
+  var dn = quartVals[0] - ((quartVals[2] - quartVals[0]) * 1.5);
+  for (var i = 0; i < set.length; i++) {
+    if (set[i] > up || set[i] < dn)
+      outliersArr.push(set[i]);
+  }
+  return outliersArr;
+}
+
+var data = [];
+var sorted = [];
+
+function calculate() {
+  var delim = document.querySelector('input[name="delim"]:checked').value;
+  data = document.getElementById("data").value.split(delim);
+  if (data.length < 2) {
+    alert("Please enter two or more values!");
+  } else {
+    var sum = 0;
+    for (var i = 0; i < data.length; i++) {
+      data[i] = parseInt(data[i]);
+      sum += data[i];
+    }
+    sorted = data.sort(function(a, b){return a-b;});
+    var quartVals = findQuarts(sorted);
+    document.getElementById("sortedCont").value = sorted.join(",");
+
+    document.getElementById("countCont").value = data.length;
+    document.getElementById("sumCont").value = sum;
+    document.getElementById("meanCont").value = findMean(data);
+    document.getElementsByClassName("medCont")[0].value = quartVals[1];
+    document.getElementById("modeCont").value = findMode(sorted);
+
+    document.getElementById("minCont").value = sorted[0];
+    document.getElementById("maxCont").value = sorted[sorted.length-1];
+
+    document.getElementById("q1Cont").value = quartVals[0];
+    document.getElementsByClassName("medCont")[1].value = quartVals[1];
+    document.getElementById("q3Cont").value = quartVals[2];
+
+    document.getElementById("rangeCont").value = sorted[sorted.length-1] - sorted[0];
+    document.getElementById("intqCont").value = quartVals[2] - quartVals[0];
+    document.getElementById("madCont").value = findMAD(data);
+    document.getElementById("stDevCont").value = findStDev(data);
+    
+    document.getElementById("zscrCont").value = findZScores(sorted);
+
+    document.getElementById("outCont").value = findOutliers(data);
+  }
+}
+
+function useZScores() {
+  var zScores = findZScores(data);
+  document.getElementById("data").value = zScores;
+  calculate();
+}
+
+function fixOut() {
+  var outliers = findOutliers(data);
+  if (outliers.length < 1) {
+    alert("There are no outliers to exclude from calculations!");
+  } else {
+    var outI = 0;
+    var noOut = [];
+    for (var i = 0; i < sorted.length; i++) {
+      if (sorted[i] != outliers[outI]) {
+        noOut.push(sorted[i]);
+      } else
+        outI++;
+    }
+    document.getElementById("data").value = noOut;
+    calculate();
+  }
+}
+</script>
+</head>
+
+<body>
+  <h1>Statistic Measurements Helper</h1>
+
+  <div id="intro">
+    Need statistics help (or just lazy)?<br />Enter your data below and Calculate!&#9786;<br />
+    <img src="http://imageenvision.com/sm/0025-0802-2114-3651_clip_art_graphic_of_a_calculator_cartoon_character_with_welcoming_open_arms.jpg" /><br />
+  </div>
+
+  <div id="input">
+    <p>
+      Delimiter: <input type="radio" name="delim" value="," checked/> comma <input type="radio" name="delim" value=" "/> space<br />
+      <textarea id="data" rows="6" cols="30" autofocus></textarea><br />
+      <button onclick="calculate()">Calculate</button>
+    </p>
+  </div>
+
+  <div id="sorted">
+    <h3>Sorted data</h3>
+    <p><input id="sortedCont" size="45" type="text" disabled></p>
+  </div>
+
+  <div id="general">
+    <h3>General Statistics</h3>
+      <p>
+        Count: <input id="countCont" size="6" type="text" disabled><br />
+        Sum: <input id="sumCont" size="6" type="text" disabled><br />
+        Mean: <input id="meanCont" size="6" type="text" disabled><br />
+        Median: <input class="medCont" size="6" type="text" disabled><br />
+        Mode: <input id="modeCont" size="6" type="text" disabled><br />
+      <p>
+  </div>
+
+  <div id="summary">
+    <h3>5-Number Summary</h3>
+      <p>
+        Minimum: <input id="minCont" size="6" type="text" disabled><br />
+        First Quartile: <input id="q1Cont" size="6" type="text" disabled><br />
+        Median: <input class="medCont" size="6" type="text" disabled><br />
+        Third Quartile: <input id="q3Cont" size="6" type="text" disabled><br />
+        Maximum: <input id="maxCont" size="6" type="text" disabled>
+    </p>
+  </div>
+
+  <div id="variation">
+    <h3>Measures of Variation</h3>
+      <p>
+        Range: <input id="rangeCont" size="6" type="text" disabled><br />
+        Interquartile Range: <input id="intqCont" size="6" type="text" disabled><br />
+        Mean Absolute Deviation: <input id="madCont" size="22" type="text" disabled><br />
+        Standard Deviation: <input id="stDevCont" size="22" type="text" disabled><br />
+      </p>
+  </div>
+
+  <div id="zscores">
+    <h3>Z-Scores</h3>
+    <p>
+      <textarea id="zscrCont" rows="6" cols="30" disabled></textarea><br />
+      <button onclick="useZScores()">Calculate with z-scores as data </button>
+    </p>
+  </div>
+
+  <div id="outliers">
+    <h3>Outliers</h3>
+    <p>
+      <input id="outCont" size="30" type="text" disabled><br />
+      <button onclick="fixOut()">Exclude outliers from calculations</button>
+    </p>
+  </div>
+
+  <div id="funny">
+    <h3>Funny stuff</h3>
+    <p>
+      <img src="http://www.geekfill.com/wp-content/uploads/2014/01/Well-played-math-teachers.jpg" />
+      <img src="http://readersclubdelhi.com/wp-content/uploads/2014/09/Funniest_Memes_two-math-for-dummiesat-1699-each-that-will_6240.jpeg" />
+    </p>
+  </div>
+
+  <div id="copy">
+    <p>&copy; 2015 Gabriel Totev</p>
+  </div>
+
+</body>
+</html>
