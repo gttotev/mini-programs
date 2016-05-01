@@ -7,7 +7,7 @@ Here are some of them:
 
 <ul>
 
-<li><b>Statistics Calc</b> - Takes in a list of numerical data and performs statistical calculations on it.</li>
+<li><b>Statistics Helper</b> - Takes in a list of numerical data and performs statistical calculations on it.</li>
 
 <li><b>Rad-Deg Converter</b> - Converts radians entered to degrees.</li>
 
@@ -17,6 +17,6 @@ Here are some of them:
 
 <li><b>Test Taker</b> - Creates a graph and table for some input values based on test scores.</li>
 
-<li><b>Dollar Words</b> - Finds all words that's letters alphabet values add up to 100.</li>
+<li><b>Dollar Words</b> - Finds all words in a dictionary whose alphabet values (cents) add up to 100 ($1).</li>
 
 </ul>
