@@ -4,6 +4,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Dollar Words</title>
+  <script type="text/javascript">
+    var dictionary = [];
+    var alphabet = {};
+    
+    function findWords() {
+      //Create alphabet with letters and their cent "values"
+      for (i = 97; i <= 122; i++) {
+        alphabet[String.fromCharCode(i)] = i - 96;
+      }
+      
+      //Find all the dollar words
+      var dWords = dollarWords(dictionary, alphabet);
+      
+      //Add each dollar word to the list
+      for (var i = 0; i < dWords.length; i++) {
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode(dWords[i]);
+        node.appendChild(textnode);
+        document.getElementById("dWordList").appendChild(node);
+      }
+    }
+    
+    function dollarWords(words, alphabet) {
+      var dWords = [];
+      for (var i = 0; i < words.length; i++) { //noprotect
+        var word = words[i];
+        if (!(/[^A-Za-z]/.test(word))) {
+          word = word.toLowerCase().split("");
+          var f = 0;
+          for (var e = 0; e < words[i].length; e++) {
+            f += alphabet[word[e]];
+          }
+          if (f == 100)
+            dWords.push(words[i]);
+        }
+      }
+      return dWords;
+    }
+    
+    function loadDict(event) {
+      var input = event.target;
+      var reader = new FileReader();
+      reader.onload = function() {
+        var rawText = reader.result;
+        dictionary = rawText.split("\n");
+        alert("Dictionary loaded!");
+      };
+      reader.readAsText(input.files[0]);
+    }
+  </script>
 </head>
 
 <body>
