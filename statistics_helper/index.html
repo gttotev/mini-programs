@@ -86,8 +86,8 @@ var data = [];
 var sorted = [];
 
 function calculate() {
-  var delim = document.querySelector('input[name="delim"]:checked').value;
-  data = document.getElementById("data").value.split(delim);
+  var delim = document.querySelector("input[name=\"delim\"]:checked").value;
+  data = document.getElementById("data").value.split(delim == "nl" ? "\n" : delim);
   if (data.length < 2) {
     alert("Please enter two or more values!");
   } else {
@@ -160,7 +160,9 @@ function fixOut() {
 
   <div id="input">
     <p>
-      Delimiter: <input type="radio" name="delim" value="," checked/> comma <input type="radio" name="delim" value=" "/> space<br />
+      Delimiter: <input type="radio" name="delim" value="," checked/> comma&nbsp;
+      <input type="radio" name="delim" value=" "/> space&nbsp;
+      <input type="radio" name="delim" value="nl"/> newline<br />
       <textarea id="data" rows="6" cols="30" autofocus></textarea><br />
       <button onclick="calculate()">Calculate</button>
     </p>
